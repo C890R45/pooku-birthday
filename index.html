@@ -1,0 +1,219 @@
+<!--
+Happy Birthday Site for Pooku
+Single-file HTML. Theme: Chocolate (warm browns, cream, gold)
+
+IMPORTANT: Place your uploaded MP3 file at: ./assets/yeh_raten.mp3
+or edit the <audio> src attribute below to point to your MP3 path.
+
+Replace placeholder images in ./assets/ (or update image URLs in the HTML):
+ - assets/photo1.jpg, assets/photo2.jpg, assets/photo3.jpg
+
+To deploy on GitHub Pages: Create a repo, add this index.html (and assets/ folder),
+push to main branch and enable GitHub Pages from repo Settings -> Pages -> Deploy from branch.
+
+This file includes:
+ - Hero banner with confetti and autoplay music (mute/unmute button)
+ - Handwritten-style birthday letter for Pooku (from Pookie)
+ - Photo placeholder collage
+ - Example memories (editable)
+ - Virtual gift unwrapping interactive animation
+ - Chocolate fireworks finale
+
+Have fun — replace images/audio with your real files and you'll be ready to share!
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy Birthday Pooku 🎂🍫</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="card">
+
+    <header class="hero">
+      <canvas id="confetti-canvas"></canvas>
+      <div class="controls">
+        <button id="muteBtn" class="btn">🔈 Mute</button>
+        <button id="openGiftBtn" class="btn">🎁 Open Gift</button>
+      </div>
+
+      <h1>Happy Birthday, Pooku! 🎉</h1>
+      <p class="lead">For all the fun, the food, and the chocolate — especially the chocolate.</p>
+
+      <!-- Hidden audio; replace path if you place the mp3 in assets/ -->
+      <audio id="bgAudio" src="assets/yeh_raten.mp3" preload="auto" loop></audio>
+    </header>
+
+    <main>
+      <div class="two-col">
+        <section>
+          <div class="letter">
+            <h2>Dear Pooku,</h2>
+            <p>Happy Birthday to the queen of chocolate and the greatest foodie I know! 🧁🍫</p>
+            <p>May your day be as sweet as your favourite dessert and as warm as a fresh cup of cocoa. I still don’t know how you manage to find the best chocolate spots in town — maybe it’s a superpower. Thank you for sharing your snacks, your laughter, and your endless love for all things delicious. I hope this year brings you new flavours, midnight chocolate raids that never get discovered, and countless meals that make your heart sing.</p>
+            <p class="signature">With all my love, <br>Pookie ❤️</p>
+          </div>
+
+          <div class="memories">
+            <h3 style="color:var(--cream); font-family:Pacifico; margin:14px 0 8px;">Little Memories</h3>
+            <div class="memory">
+              <div class="date">2019 — First Pizza Night</div>
+              <div>We ordered the biggest pizza and you laughed when the box fell open. Best. Night.</div>
+            </div>
+            <div class="memory">
+              <div class="date">2021 — Chocolate Chase</div>
+              <div>We searched three shops for that limited-edition bar. You found it. You won.</div>
+            </div>
+          </div>
+        </section>
+
+        <aside>
+          <div style="background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02)); padding:18px; border-radius:12px;">
+            <h3 style="color:var(--cream); font-family:Pacifico; margin:0 0 10px">Sweet Moments</h3>
+            <div class="collage">
+              <img src="assets/photo1.jpg" alt="photo placeholder 1" onerror="this.src='https://picsum.photos/300/200?blur=2'">
+              <img src="assets/photo2.jpg" alt="photo placeholder 2" onerror="this.src='https://picsum.photos/301/201?blur=2'">
+              <img src="assets/photo3.jpg" alt="photo placeholder 3" onerror="this.src='https://picsum.photos/302/202?blur=2'">
+            </div>
+
+            <div style="margin-top:12px;">
+              <h4 style="margin:6px 0 6px; color:var(--choco-1)">Virtual Gift</h4>
+              <div class="gift-wrap">
+                <div class="gift" id="gift">
+                  <div class="lid"></div>
+                  <div class="ribbon"></div>
+                  <div class="bow"></div>
+                </div>
+              </div>
+              <div class="surprise" id="surprise">
+                <div style="font-size:22px; font-weight:700; color:var(--choco-1)">Surprise!</div>
+                <div class="note">You won: <strong>Unlimited Chocolate Coupons</strong> 🍫 (redeem with a hug)</div>
+                <div style="margin-top:8px; font-size:13px; color:var(--choco-2)">Tap the cake to celebrate</div>
+                <div style="margin-top:10px">
+                  <button class="btn" id="celebrateBtn">🎂 Celebrate!</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </aside>
+      </div>
+
+      <section style="margin-top:18px;">
+        <div style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); padding:20px; border-radius:12px;">
+          <h3 style="font-family:Pacifico; color:var(--cream); margin:0 0 10px">Ending</h3>
+          <div class="fireworks" id="fireworksArea"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div style="font-size:14px">From Pookie — <span class="muted">Made with chocolate & love.</span></div>
+    </footer>
+  </div>
+
+  <script>
+    // Basic audio controls and autoplay attempt
+    const audio = document.getElementById('bgAudio');
+    const muteBtn = document.getElementById('muteBtn');
+    const openGiftBtn = document.getElementById('openGiftBtn');
+    let isMuted = false;
+
+    function tryPlayAudio(){
+      audio.play().catch(err => {
+        // autoplay blocked; show muted state
+        isMuted = true; audio.muted = true; muteBtn.textContent = '🔈 Muted';
+      });
+    }
+    tryPlayAudio();
+
+    muteBtn.addEventListener('click', ()=>{
+      isMuted = !isMuted;
+      audio.muted = isMuted;
+      muteBtn.textContent = isMuted ? '🔇 Muted' : '🔈 Unmuted';
+    });
+
+    // Confetti (simple canvas confetti)
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    const ctx = confettiCanvas.getContext('2d');
+    function resizeCanvas(){confettiCanvas.width = confettiCanvas.offsetWidth; confettiCanvas.height = confettiCanvas.offsetHeight}
+    window.addEventListener('resize', resizeCanvas); resizeCanvas();
+
+    const confettiPieces = [];
+    function spawnConfetti(){
+      for(let i=0;i<40;i++){
+        confettiPieces.push({x:Math.random()*confettiCanvas.width, y:Math.random()*-confettiCanvas.height, w:6+Math.random()*8, h:8+Math.random()*8, rot:Math.random()*360, speed:1+Math.random()*3, color: ['#d4af37','#fff4e6','#c69c6d','#3e2723'][Math.floor(Math.random()*4)]});
+      }
+    }
+    spawnConfetti();
+    function updateConfetti(){
+      ctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+      for(let i=confettiPieces.length-1;i>=0;i--){
+        const p = confettiPieces[i]; p.y += p.speed; p.rot += 4; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180); ctx.fillStyle = p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
+        if(p.y > confettiCanvas.height+20) confettiPieces.splice(i,1);
+      }
+      if(confettiPieces.length < 60 && Math.random() < 0.06) spawnConfetti();
+      requestAnimationFrame(updateConfetti);
+    }
+    updateConfetti();
+
+    // Gift unwrapping animation
+    const gift = document.getElementById('gift');
+    const surprise = document.getElementById('surprise');
+    const celebrateBtn = document.getElementById('celebrateBtn');
+
+    function openGift(){
+      gift.classList.add('open');
+      setTimeout(()=>{
+        surprise.classList.add('show');
+        // small extra confetti burst
+        for(let i=0;i<80;i++) confettiPieces.push({x:Math.random()*confettiCanvas.width, y:Math.random()*confettiCanvas.height/2, w:6+Math.random()*8, h:8+Math.random()*8, rot:Math.random()*360, speed:2+Math.random()*3, color: ['#d4af37','#fff4e6','#c69c6d','#5d4037'][Math.floor(Math.random()*4)]});
+      },650);
+    }
+
+    gift.addEventListener('click', openGift);
+    openGiftBtn.addEventListener('click', ()=>{gift.scrollIntoView({behavior:'smooth'}); gift.classList.add('open'); openGift();});
+
+    // Celebration button triggers chocolate fireworks
+    celebrateBtn.addEventListener('click', ()=>{
+      launchFireworks();
+    });
+
+    // Simple fireworks made of particles in the fireworks area
+    function launchFireworks(){
+      const area = document.getElementById('fireworksArea');
+      const canvasF = document.createElement('canvas'); canvasF.width = area.offsetWidth; canvasF.height = area.offsetHeight; area.appendChild(canvasF);
+      const c = canvasF.getContext('2d');
+      const particles = [];
+      function spawn(){
+        const cx = canvasF.width/2; const cy = canvasF.height/2;
+        for(let i=0;i<60;i++) particles.push({x:cx, y:cy, vx:(Math.random()-0.5)*6, vy:(Math.random()-0.9)*6, life:60+Math.random()*40, color: ['#3e2723','#6d4c41','#a1887f','#d4af37'][Math.floor(Math.random()*4)]});
+      }
+      spawn();
+      function loop(){
+        c.clearRect(0,0,canvasF.width, canvasF.height);
+        for(let i=particles.length-1;i>=0;i--){
+          const p = particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.life--; c.fillStyle = p.color; c.beginPath(); c.arc(p.x,p.y, Math.max(0,3*(p.life/80)),0,Math.PI*2); c.fill(); if(p.life<=0) particles.splice(i,1);
+        }
+        if(particles.length>0) requestAnimationFrame(loop); else setTimeout(()=>{area.removeChild(canvasF)},700);
+      }
+      loop();
+    }
+
+    // Small mobile friendly hint: tap anywhere to play audio if user hasn't allowed autoplay
+    document.body.addEventListener('click', function enableAudio(){
+      if(audio.paused){ audio.play().catch(()=>{}); }
+      document.body.removeEventListener('click', enableAudio);
+    });
+
+  </script>
+</body>
+</html>
